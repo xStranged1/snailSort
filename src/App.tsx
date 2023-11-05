@@ -4,9 +4,15 @@ import './App.css'
 const matrix = [[1,2,3], [4,5,6], [7,8,9]];
 const matrix4x4 = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]];
 
-const matrixLength = matrix.length
-let matrixAux = Array.from(matrix);
-let matrixSolved = Array.from(matrix);
+
+
+function copiarMatriz(matriz:number[][]) {
+  return matriz.map(row => [...row]);
+}
+
+let matrixSolved = copiarMatriz(matrix4x4);
+
+let matrixAux = copiarMatriz(matrix4x4); 
 
 function getDimension(matrix:number[][]){
   let row = matrix[0];
@@ -43,6 +49,15 @@ function addNumbers(matrix:number[][], arr:number[]){
   }
 }
 
+function getRow(matrix:number[][], nRow:number){ //getRow and delete that row from original
+  
+  let row = matrixAux[nRow]
+
+  matrix.splice(nRow, 1)
+
+  return row
+}
+
 function getColumn(matrix:number[][], nColumn:number){ //getColumn and delete that column from original
   let column: number[] = []
   matrix.map((row) => {
@@ -52,14 +67,37 @@ function getColumn(matrix:number[][], nColumn:number){ //getColumn and delete th
   return column
 }
 
+
+
+
 matrixAux = matrixAux.slice(1, matrixAux.length)
-getColumn(matrixSolved, 2)
 matrixSolved = matrixSolved.slice(0,1)
-let countCellSolved = 0
 let dim = getDimension(matrix4x4)
-// while(countCellSolved<((dim*dim)-dim)){
-//   let arrToAdd = getColumn()
-// }
+let countCellSolved = dim
+let nCells = (dim*dim)
+while(countCellSolved < nCells){
+  let firstRow = matrixAux[0]
+  let arrToAdd = getColumn(matrixAux, (firstRow.length-1))
+  addNumbers(matrixSolved, arrToAdd) 
+  countCellSolved = countCellSolved + arrToAdd.length  // 🐍 🡫
+  if (countCellSolved >= nCells) break
+
+  let lastRow = getRow(matrixAux, (matrixAux.length-1))
+  addNumbers(matrixSolved, lastRow.reverse()) // 🐍 🡨
+  countCellSolved = countCellSolved + lastRow.length
+  if (countCellSolved >= nCells) break
+
+  let firstColumn = getColumn(matrixAux, 0) // 🐍 🡩
+  addNumbers(matrixSolved, firstColumn.reverse())
+  countCellSolved = countCellSolved + firstColumn.length
+  if (countCellSolved >= nCells) break
+
+  firstRow = getRow(matrixAux, 0)
+  addNumbers(matrixSolved, firstRow) // 🐍 🡪
+  countCellSolved = countCellSolved + firstRow.length
+  if (countCellSolved >= nCells) break
+ 
+}
 
 interface RowProps {
   row: number[]
