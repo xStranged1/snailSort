@@ -8,23 +8,28 @@
   align-items: center;
 }
 .matrix{
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+.row{
   display: flex;
   flex: auto;
   justify-content: center;
   align-items: center;
   flex-direction: row;
 }
-.row{
-  background-color: aliceblue;
-  z-index: 5;
-
-}
 .cell{
   width: 100px;
   height: 100px;
   border: 1px solid;
-  background-color: darkgrey;
+  background-color: #222424;
   align-self: center;
   justify-content: center;
   display: flex;
+}
+.cell p{
+  align-self: center;
+  font-size: 1.2em;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
