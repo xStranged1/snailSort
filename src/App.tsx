@@ -1,18 +1,21 @@
-//import { useState } from 'react'
 import './App.css'
+import challenge from '../src/challenge.png'
 
-const matrix = [[1,2,3], [4,5,6], [7,8,9]];
+const matrix3x3 = [[1,2,3], [4,5,6], [7,8,9]];
 const matrix4x4 = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]];
 
-
+const matrix8x8:number[][] = [] //create matrix 8x8 random
+for (let i = 0; i < 8; i++) {
+  const row = [];
+  for (let j = 0; j < 8; j++) {
+    row.push(Math.floor((Math.random() * 99)+1))
+  }
+  matrix8x8.push(row);
+}
 
 function copiarMatriz(matriz:number[][]) {
   return matriz.map(row => [...row]);
 }
-
-let matrixSolved = copiarMatriz(matrix4x4);
-
-let matrixAux = copiarMatriz(matrix4x4); 
 
 function getDimension(matrix:number[][]){
   let row = matrix[0];
@@ -30,7 +33,7 @@ function addNumbers(matrix:number[][], arr:number[]){
     //imposible case
   }else{
     if(lastRowLenght == dim){
-      matrixSolved.push(arrToAdd)
+      matrix.push(arrToAdd)
     }else{
       let indexArrToAdd = 0
       for (let i = 0; i < dim; i++) {
@@ -43,7 +46,7 @@ function addNumbers(matrix:number[][], arr:number[]){
         }  
       }
       if(indexArrToAdd<arrToAdd.length){ //continue adding numbers
-        matrixSolved.push(arrToAdd.slice(indexArrToAdd,arrToAdd.length))
+        matrix.push(arrToAdd.slice(indexArrToAdd,arrToAdd.length))
       }
     }
   }
@@ -51,7 +54,7 @@ function addNumbers(matrix:number[][], arr:number[]){
 
 function getRow(matrix:number[][], nRow:number){ //getRow and delete that row from original
   
-  let row = matrixAux[nRow]
+  let row = matrix[nRow]
 
   matrix.splice(nRow, 1)
 
@@ -67,79 +70,112 @@ function getColumn(matrix:number[][], nColumn:number){ //getColumn and delete th
   return column
 }
 
+function snail(matrix:number[][]){
+  let matrixSolved = copiarMatriz(matrix);
+  let matrixAux = copiarMatriz(matrix); 
+  matrixAux = matrixAux.slice(1, matrixAux.length)
+  matrixSolved = matrixSolved.slice(0,1)
+  let dim = getDimension(matrix)
+  let countCellSolved = dim
+  let nCells = (dim*dim)
+  while(countCellSolved < nCells){
+    let firstRow = matrixAux[0]
+    let arrToAdd = getColumn(matrixAux, (firstRow.length-1))
+    addNumbers(matrixSolved, arrToAdd) 
+    countCellSolved = countCellSolved + arrToAdd.length  // 🐌 🡫
+    if (countCellSolved >= nCells) break
 
+    let lastRow = getRow(matrixAux, (matrixAux.length-1))
+    addNumbers(matrixSolved, lastRow.reverse()) // 🐌 🡨
+    countCellSolved = countCellSolved + lastRow.length
+    if (countCellSolved >= nCells) break
 
+    let firstColumn = getColumn(matrixAux, 0) // 🐌 🡩
+    addNumbers(matrixSolved, firstColumn.reverse())
+    countCellSolved = countCellSolved + firstColumn.length
+    if (countCellSolved >= nCells) break
 
-matrixAux = matrixAux.slice(1, matrixAux.length)
-matrixSolved = matrixSolved.slice(0,1)
-let dim = getDimension(matrix4x4)
-let countCellSolved = dim
-let nCells = (dim*dim)
-while(countCellSolved < nCells){
-  let firstRow = matrixAux[0]
-  let arrToAdd = getColumn(matrixAux, (firstRow.length-1))
-  addNumbers(matrixSolved, arrToAdd) 
-  countCellSolved = countCellSolved + arrToAdd.length  // 🐍 🡫
-  if (countCellSolved >= nCells) break
-
-  let lastRow = getRow(matrixAux, (matrixAux.length-1))
-  addNumbers(matrixSolved, lastRow.reverse()) // 🐍 🡨
-  countCellSolved = countCellSolved + lastRow.length
-  if (countCellSolved >= nCells) break
-
-  let firstColumn = getColumn(matrixAux, 0) // 🐍 🡩
-  addNumbers(matrixSolved, firstColumn.reverse())
-  countCellSolved = countCellSolved + firstColumn.length
-  if (countCellSolved >= nCells) break
-
-  firstRow = getRow(matrixAux, 0)
-  addNumbers(matrixSolved, firstRow) // 🐍 🡪
-  countCellSolved = countCellSolved + firstRow.length
-  if (countCellSolved >= nCells) break
- 
+    firstRow = getRow(matrixAux, 0)
+    addNumbers(matrixSolved, firstRow) // 🐌 🡪
+    countCellSolved = countCellSolved + firstRow.length
+    if (countCellSolved >= nCells) break
+  }
+  return matrixSolved
 }
+
+let matrix3x3Solved = snail(matrix3x3)
+let matrix4x4Solved = snail(matrix4x4)
+let matrix8x8Solved = snail(matrix8x8)
+
+
 
 interface RowProps {
   row: number[]
 }
 
 const Row: React.FC<RowProps> = ({ row }) => {
-
   return (row && (
     row.map((cell: number, index) => {
     return (<div key={index} className='cell'><p>{cell}</p></div>)
   })
  ))
- 
 }
+
 function App() {
   //const [count, setCount] = useState(0)
 
   return (
     <div className='container'>
-        <h1>Snail Sort {dim}</h1>
-        <h2>Matrix: '[1,2,3], [4,5,6], [7,8,9]'</h2>
+      <h1>🐌 Snail Sort 🐌</h1>
+      <div className='separator-sm'/>
+      <h2>The challenge</h2>
+      <img style={{border: "1px solid #fff"}} src={challenge} alt="challenge" />
+      <div className='separator-sm'/>
+      <div className='separator-sm'/>
+
       <div className='matrix'>
-        
-        {matrix && (matrix.map((row: number[], index) => {
+          <h2>Matrix 3x3</h2>
+          <p className='subtitle'>{JSON.stringify(matrix3x3)}</p>
+          {matrix3x3 && (matrix3x3.map((row: number[], index) => {
             return (<div key={index} className='row'><Row row={row} /></div>)
           }))}
           <br />
-          <h3>4x4</h3>
+          <br />
+
+          <h2>Matrix 3x3 snailed 🐌</h2>
+          <p className='subtitle'>{JSON.stringify(matrix3x3Solved)}</p>
+          {matrix3x3Solved && (matrix3x3Solved.map((row: number[], index) => {
+            return (<div key={index} className='row'><Row row={row} /></div>)
+          }))}
+          <div className='separator'/>
+
+          <h2>Matrix 4x4</h2>
+          <p className='subtitle'>{JSON.stringify(matrix3x3Solved)}</p>
           {matrix4x4 && (matrix4x4.map((row: number[], index) => {
             return (<div key={index} className='row'><Row row={row} /></div>)
           }))}
-          <br />
-          <h3>Matrix Aux</h3>
-          {matrixAux && (matrixAux.map((row: number[], index) => {
-            return (<div key={index} className='row'><Row row={row} /></div>)
-          }))}
-          <br />
-          <h3>Solved</h3>
-          {matrixSolved && (matrixSolved.map((row: number[], index) => {
-            return (<div key={index} className='row'><Row row={row} /></div>)
-          }))}
+          <div className='separator-sm'/>
           
+          <h2>Matrix 4x4 snailed 🐌</h2>
+          <p className='subtitle'>{JSON.stringify(matrix4x4Solved)}</p>
+          {matrix4x4Solved && (matrix4x4Solved.map((row: number[], index) => {
+            return (<div key={index} className='row'><Row row={row} /></div>)
+          }))}
+          <div className='separator'/>
+
+          <h2>Matrix 8x8 random</h2>
+          <p className='subtitle'>{JSON.stringify(matrix8x8)}</p>
+          {matrix8x8  && (matrix8x8.map((row: number[], index) => {
+            return (<div key={index} className='row'><Row row={row} /></div>)
+          }))}
+          <div className='separator-sm'/>
+
+          <h2>Matrix 8x8 snailed 🐌</h2>
+          <p className='subtitle'>{JSON.stringify(matrix8x8Solved)}</p>
+          {matrix4x4Solved && (matrix8x8Solved.map((row: number[], index) => {
+            return (<div key={index} className='row'><Row row={row} /></div>)
+          }))}
+          <div className='separator'/>
       </div>
     </div>
   )

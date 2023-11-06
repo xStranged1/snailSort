@@ -26,6 +26,13 @@ h1 {
   line-height: 1.1;
 }
 
+h2{
+  color: #76d83d;
+}
+
+.subtitle{
+  color: #73d13db9;
+}
 button {
   border-radius: 8px;
   border: 1px solid transparent;
